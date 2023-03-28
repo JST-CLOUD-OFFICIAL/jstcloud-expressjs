@@ -8,11 +8,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cors());
 
-// 首页
-app.get("/", async (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
-});
-
 // 计数+1
 app.post("/counter/increment", async (req, res) => {
   const { action } = req.body;
@@ -31,20 +26,36 @@ app.post("/counter/increment", async (req, res) => {
 
 // 计数-1
 app.get("/counter/decrement", async (req, res) => {
-  const result = await Counter.count();
+  var result = await Counter.findOrCreate();
+  result.count--;
+  result = await Counter.update(result);
+
   res.send({
     code: 0,
-    data: result,
+    data: result.count,
   });
 });
 
 
-// 获取计数
-app.get("/counter", async (req, res) => {
-  const result = await Counter.count();
+// 计数+1
+app.get("/counter/increment", async (req, res) => {
+  var result = await Counter.findOrCreate();
+  result.count--;
+  result = await Counter.update(result);
+
   res.send({
     code: 0,
-    data: result,
+    data: result.count,
+  });
+});
+
+// 获取计数
+app.get("/counter", async (req, res) => {
+  var result = await Counter.findOrCreate();
+
+  res.send({
+    code: 0,
+    data: result.count,
   });
 });
 
@@ -53,7 +64,7 @@ const port = process.env.PORT || 80;
 async function bootstrap() {
   await initDB();
   app.listen(port, () => {
-    console.log("启动成功", port);
+    console.log("start server success", port);
   });
 }
 
