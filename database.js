@@ -20,7 +20,7 @@ const sequelize = new Sequelize(db_name, db_user, db_pass, {
 });
 
 // 定义数据模型
-const Counter = sequelize.define("Counter", {
+const Counter = sequelize.define("counter", {
   count: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -29,15 +29,21 @@ const Counter = sequelize.define("Counter", {
   gmt_created: {
     type: DataTypes.DATE,
     allowNull: false,
-    defaultValue: Date.now()
+    defaultValue: Sequelize.fn('NOW')
   },
   gmt_modified: {
-    type: DataTypes.TIME,
+    type: DataTypes.DATE,
     allowNull: false,
-    defaultValue: Date.now()
+    defaultValue: Sequelize.fn('NOW')
   }
 }, {
+  tableName: 'counter', // 将表名设置为 "counter"
   timestamps: false
+});
+
+// 在每次更新前自动更新 gmt_modified 字段
+Counter.beforeUpdate((counter) => {
+  counter.gmt_modified = Sequelize.fn('NOW');
 });
 
 // 数据库初始化方法
