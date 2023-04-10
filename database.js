@@ -8,19 +8,26 @@ const {
   db_pass  // 数据库密码
 } = process.env
 
-const port = 3306;
-const type = "mysql"
+// 定义一个Sequelize对象
+let sequelize = null 
 
-// 定义数据库对象
-const sequelize = new Sequelize(db_name, db_user, db_pass, {
-  db_addr,
-  port,
-  dialect: type,
-  timezone: "+08:00"
-});
+if (db_pass) { 
+  // 如果db_pass不为空，则初始化连接到数据库
+  const addr = db_addr.split[0]
+  const port = db_addr.split[1]
+  const type = "mysql"
+
+  // 创建Sequelize实例并连接到MySQL数据库
+  sequelize = new Sequelize(db_name, db_user, db_pass, {
+    host: addr,
+    port: port,
+    dialect: type,
+    timezone: "+08:00"
+  });
+}
 
 // 定义数据模型
-const Counter = sequelize.define("counter", {
+const Counter = sequelize?.define("counter", {
   count: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -42,13 +49,16 @@ const Counter = sequelize.define("counter", {
 });
 
 // 在每次更新前自动更新 gmt_modified 字段
-Counter.beforeUpdate((counter) => {
+Counter?.beforeUpdate((counter) => {
   counter.gmt_modified = Sequelize.fn('NOW');
 });
 
 // 数据库初始化方法
 async function init() {
-  await Counter.sync({ alter: true });
+  // 只有在Sequelize对象存在时才进行数据库同步操作
+  if (sequelize) { 
+    await sequelize.sync({ alter: true });
+  }
 }
 
 // 导出初始化方法和模型
