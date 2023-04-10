@@ -50,6 +50,14 @@ app.get("/counter", async (req, res) => {
   });
 });
 
+// 获取计数
+app.get("/", async (req, res) => {
+  res.send({
+    code: 0,
+    data: "Welcome to Jst AppEngine, Hello World!",
+  });
+});
+
 const port = process.env.SERVER_PORT || 8080;
 
 async function bootstrap() {
