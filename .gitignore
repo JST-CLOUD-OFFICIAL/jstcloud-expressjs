@@ -67,3 +67,5 @@ dist
 .tern-port
 
 test.sh
+
+*demo.zip
